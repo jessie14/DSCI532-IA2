@@ -155,7 +155,7 @@ app$callback(
       filtered = filter_data(df, year_range=year_range, sport=sport, country=country, medals=medals, season=season)%>%
         group_by(ID,Games)%>%
         summarise(Age = mean(Age), Height = mean(Height), Weight = mean(Weight), Sex = first(Sex))
-      fig1 <- ggplot(df, aes(x=Height,fill = Sex))+ 
+      fig1 <- ggplot(filtered, aes(x=Height,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Height (cm)", title = "Distribution of Heights")+
         scale_y_continuous(labels = scales::label_number_si())+
@@ -173,7 +173,7 @@ app$callback(
           legend.background = element_rect(fill = "transparent"), # get rid of legend bg
           legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
         )
-      fig2 <- ggplot(df, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+      fig2 <- ggplot(filtered, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Weight (kg)", title = "Distribution of Weights")+
         scale_y_continuous(labels = scales::label_number_si())+
@@ -191,7 +191,7 @@ app$callback(
           legend.background = element_rect(fill = "transparent"), # get rid of legend bg
           legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
         )
-      fig3 <- ggplot(df, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+      fig3 <- ggplot(filtered, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Age (years)", title = "Distribution of Age")+
         scale_y_continuous(labels = scales::label_number_si())+
