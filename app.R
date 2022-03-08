@@ -159,62 +159,38 @@ app$callback(
         summarise(Age = mean(Age), Height = mean(Height), Weight = mean(Weight), Sex = first(Sex))%>%
         unnest(cols = c(Sex))%>% 
         distinct()
-    
+      
+      theme <- scale_y_continuous(labels = scales::label_number_si())+
+        theme(
+          panel.background = element_rect(fill = "transparent"), # bg of the panel
+          plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+          panel.grid.major.x = element_blank() ,
+          axis.title.x = element_text(colour = "white"),
+          axis.title.y = element_text(colour = "white"),
+          axis.text.x = element_text(colour = "white"),
+          axis.text.y = element_text(colour = "white"),
+          plot.title = element_text(colour = "white"),
+          legend.title = element_text(colour = "white"),
+          legend.text = element_text(colour = "white"),
+          legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+          legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+        )
       
       fig1 <- ggplot(filtered, aes(x=Height,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Height (cm)", title = "Distribution of Heights")+
-        scale_y_continuous(labels = scales::label_number_si())+
-        theme(
-          panel.background = element_rect(fill = "transparent"), # bg of the panel
-          plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
-          panel.grid.major.x = element_blank() ,
-          axis.title.x = element_text(colour = "white"),
-          axis.title.y = element_text(colour = "white"),
-          axis.text.x = element_text(colour = "white"),
-          axis.text.y = element_text(colour = "white"),
-          plot.title = element_text(colour = "white"),
-          legend.title = element_text(colour = "white"),
-          legend.text = element_text(colour = "white"),
-          legend.background = element_rect(fill = "transparent"), # get rid of legend bg
-          legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
-        )
-      fig2 <- ggplot(filtered, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        theme
+      
+      fig2 <- ggplot(filtered, aes(x=Weight,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Weight (kg)", title = "Distribution of Weights")+
-        scale_y_continuous(labels = scales::label_number_si())+
-        theme(
-          panel.background = element_rect(fill = "transparent"), # bg of the panel
-          plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
-          panel.grid.major.x = element_blank() ,
-          axis.title.x = element_text(colour = "white"),
-          axis.title.y = element_text(colour = "white"),
-          axis.text.x = element_text(colour = "white"),
-          axis.text.y = element_text(colour = "white"),
-          plot.title = element_text(colour = "white"),
-          legend.title = element_text(colour = "white"),
-          legend.text = element_text(colour = "white"),
-          legend.background = element_rect(fill = "transparent"), # get rid of legend bg
-          legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
-        )
-      fig3 <- ggplot(filtered, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        theme
+      
+      fig3 <- ggplot(filtered, aes(x=Age,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Age (years)", title = "Distribution of Age")+
-        scale_y_continuous(labels = scales::label_number_si())+
-        theme(
-          panel.background = element_rect(fill = "transparent"), # bg of the panel
-          plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
-          panel.grid.major.x = element_blank() ,
-          axis.title.x = element_text(colour = "white"),
-          axis.title.y = element_text(colour = "white"),
-          axis.text.x = element_text(colour = "white"),
-          axis.text.y = element_text(colour = "white"),
-          plot.title = element_text(colour = "white"),
-          legend.title = element_text(colour = "white"),
-          legend.text = element_text(colour = "white"),
-          legend.background = element_rect(fill = "transparent"), # get rid of legend bg
-          legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
-        )
+        theme
+      
       return(list(ggplotly(fig1),ggplotly(fig2),ggplotly(fig3)))
     }
 )
