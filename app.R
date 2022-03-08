@@ -156,6 +156,7 @@ app$callback(
       fig1 <- ggplot(df, aes(x=Height,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Height (cm)", title = "Distribution of Heights")+
+        scale_y_continuous(labels = scales::label_number_si())+
         theme(
           panel.background = element_rect(fill = "transparent"), # bg of the panel
           plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -173,6 +174,7 @@ app$callback(
       fig2 <- ggplot(df, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Weight (kg)", title = "Distribution of Weights")+
+        scale_y_continuous(labels = scales::label_number_si())+
         theme(
           panel.background = element_rect(fill = "transparent"), # bg of the panel
           plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -190,6 +192,7 @@ app$callback(
       fig3 <- ggplot(df, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Age (years)", title = "Distribution of Age")+
+        scale_y_continuous(labels = scales::label_number_si())+
         theme(
           panel.background = element_rect(fill = "transparent"), # bg of the panel
           plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -211,4 +214,4 @@ app$callback(
 
 
 
-app$run_server(debug = T)
+app$run_server(host = '0.0.0.0')
