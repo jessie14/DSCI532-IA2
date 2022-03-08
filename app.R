@@ -38,7 +38,7 @@ app$layout(
                 dccRangeSlider(
                   min = 1896, max = 2016,
                   
-                  marks = list(for (i in seq(1896, 2016, 8)) i = list("label" = sprintf('%s',i), 'style'= list('transform'= 'rotate(90deg)', 'color'= 'white')) ),
+                  marks = List(for (i in seq(1896, 2016, 8)) i = list("label" = sprintf('%s',i), 'style'= list('transform'= 'rotate(90deg)', 'color'= 'white')) ),
                   
                   id = 'year_range',
                   value = list(1896, 2016),
@@ -214,5 +214,5 @@ app$callback(
 
 
 
-
-app$run_server(host = '0.0.0.0')
+app$run_server(debug = T )
+# app$run_server(host = '0.0.0.0')
