@@ -2,6 +2,7 @@ library(dash)
 library(dashHtmlComponents)
 library(readr)
 library(dplyr)
+library(tidyr)
 library(eList)
 library(plotly)
 
@@ -219,5 +220,5 @@ app$callback(
 
 
 
-app$run_server(debug = T )
-# app$run_server(host/= '0.0.0.0')
+# app$run_server(debug = T )
+app$run_server(host= '0.0.0.0')
