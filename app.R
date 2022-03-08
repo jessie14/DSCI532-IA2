@@ -1,9 +1,7 @@
 library(dash)
-# library(dashHtmlComponents)
+library(dashHtmlComponents)
 library(readr)
 library(dplyr)
-library(eList)
-library(glue)
 library(plotly)
 
 # df = read_csv('data/clean_data.csv')
@@ -40,7 +38,7 @@ app$layout(
                 dccRangeSlider(
                   min = 1896, max = 2016,
                   
-                  marks = List(for (i in seq(1896, 2016, 8)) i = list("label" = glue('{i}'), 'style'= list('transform'= 'rotate(90deg)', 'color'= 'white')) ),
+                  marks = list(for (i in seq(1896, 2016, 8)) i = list("label" = sprintf('%s',i), 'style'= list('transform'= 'rotate(90deg)', 'color'= 'white')) ),
                   
                   id = 'year_range',
                   value = list(1896, 2016),
