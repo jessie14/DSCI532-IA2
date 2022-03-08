@@ -1,6 +1,7 @@
 library(dash)
 # library(dashHtmlComponents)
-library(tidyverse)
+library(readr)
+library(dplyr)
 library(eList)
 library(glue)
 library(plotly)
