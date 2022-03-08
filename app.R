@@ -1,9 +1,12 @@
 library(dash)
 library(dashHtmlComponents)
-library(tidyr)
+library(tidyverse)
+library(eList)
+library(glue)
+library(plotly)
 
 df = read_csv('clean_data.csv')
-app = Dash$new(external_stylesheets=list('https://codepen.io/chriddyp/pen/bWLwgP.css','/style.css'))
+app = Dash$new(external_stylesheets=list('https://codepen.io/chriddyp/pen/bWLwgP.css','style.css'))
 
 
 app$layout(
@@ -16,248 +19,149 @@ app$layout(
       htmlH4(
         "Insights for Olympic Athlete Information since 1896", 
         style = list('color'= 'white', 'text-align'= 'left', 'border-bottom'= '1px solid black', 'padding'= '0px 0px 10px 20px')
-      )
-    )
-  ),
+      ),
+    
   # Main Container Div
-  htmlDiv(
-    list(
-      
-      # Sidebar (Filter) Div
-      htmlDiv(
-        list(
-          htmlH2("Filters", 
-                 style = list('flex-grow'= '1', 
-                    'margin'= '0px',
-                    'border-bottom'= '2px solid white',
-                    'line-height'= '1')),
-          htmlDiv(
-            list(
-              htmlH5("Drag Slider To Select Years"),
-              dccRangeSlider(
-                min = 1896, max = 2016,
-                # marks = list(i= list("label"= glue('{i+4}'), 'style'= list('transform'= 'rotate(90deg)', 'color'= 'black')) for i in seq(1896, 2016, 8)),
-                id = 'year_range',
-                value = list(1896, 2016),
-                allowCross = FALSE,
-                # tooltip={"placement": "top", "always_visible": True}
+    htmlDiv(
+      list(
+  
+        # Sidebar (Filter) Div
+        htmlDiv(
+          list(
+            htmlH2("Filters",
+                   style = list('flex-grow'= '1','margin'= '0px','border-bottom'= '2px solid white','line-height'= '1')
+                   ),
+            htmlDiv(
+              list(
+                htmlH5("Drag Slider To Select Years"),
+                dccRangeSlider(
+                  min = 1896, max = 2016,
+                  
+                  marks = List(for (i in seq(1896, 2016, 8)) i = list("label" = glue('{i}'), 'style'= list('transform'= 'rotate(90deg)', 'color'= 'white')) ),
+                  
+                  id = 'year_range',
+                  value = list(1896, 2016),
+                  allowCross = FALSE,
+                  step = 1 ,
+                  tooltip=list("placement"= "top", "always_visible"= TRUE)
+                  )
+                ), style = list('width'= '100%', 'flex-grow'= '2')
+              ),
+            htmlDiv(
+              list(
+                  htmlH5("Select Sports"),
+                  dccDropdown(
+                    options=c("All",sort(unique(df$Sport))),
+                    value=list('All'),
+                    multi=TRUE,
+                    id='sport'
+                  )
+                ), style = list('width'= '100%', 'color'= 'black', 'flex-grow'= '1.5')
+              ),
+            htmlDiv(
+              list(
+                  htmlH5("Select Countries"),
+                  dccDropdown(
+                    options=c("All", sort(unique(df$Team))),
+                    value=list('All'),
+                    multi=TRUE,
+                    id='country'
+                )
+              ), style = list('width'= '100%', 'color'= 'black', 'flex-grow'= '1.5'),
+             ),
+            htmlDiv(
+              list(
+                  htmlH5("Medal Filter"),
+                  dccRadioItems(
+                    options=list('Gold', 'Silver', 'Bronze','All'),
+                    value='All',
+                    id='medals',
+                    inline=TRUE
+                  )
+                ), style = list('width'= '100%', 'flex-grow'= '1', 'color'= 'white'),
+              ),
+            
+            htmlDiv(
+              list(
+                htmlH5("Season Filter"),
+                dccRadioItems(
+                  options=c(unique(df$Season),'Both'),
+                  value='Both',
+                  id='season',
+                  inline=TRUE
               )
-            ), style = list('width'= '100%', 'flex-grow'= '2')
+            ), style = list('width'= '100%', 'flex-grow'= '4', 'color'= 'white'))
+            
+          ), style = list('width'= '23%', 'margin-top'= '0px', 'padding'= '25px',
+            'background-color'= '#544F78', 'border-radius'= '10px',
+            'display'= 'flex', 'justify-content'= 'space-around', 'flex-direction'= 'column')
+          ),
+        
+        # Graph Container Div                  
+        htmlDiv(
+          list(
+            dccLoading(
+              id = 'loading_hist',
+              children = list(
+                dccGraph(id='hist', 
+                          style = list('height'= '350px', 'width'= '33%', 'display'= 'inline-block'),
+                          config=list('displayModeBar'=FALSE)
+                          ),
+                dccGraph(id='hist2',
+                         style = list('height'= '350px', 'width'= '33%', 'display'= 'inline-block'),
+                         config=list('displayModeBar'=FALSE)
+                          ),
+                dccGraph(id='hist3',
+                         style = list('height'= '350px', 'width'= '33%', 'display'= 'inline-block'),
+                         config=list('displayModeBar'=FALSE)
+                          )
+              ), type = 'circle', color = '#B33951'
             )
-              
-            )
-          )
-                 
-          
+          ), style = list('width'= '70%', 'overflow'= 'hidden', 'height'= '950px', 
+                           'background-color'= '#544F78', 'border-radius'= '10px', 
+                           'padding'= '1%')
         )
-      )
+      ),style = list('display'= 'flex', 'justify-content'= 'space-around')
     )
+  ), style = list('display'= 'fixed', 'height'= '100%', 'background-color'= '#322c4a')
+))
+
+
+filter_data <- function (data, year_range=c(1896, 2016), season='Both', medals='All', sport=list('All'), country=list('All') ){
+  
+  year_filter <- (df$Year >= year_range[1]) & (df$Year <= year_range[2])
+  season_filter <- if_else(season =="Both",TRUE,df$Season == season)
+  medal_filter <- if_else(medals =="All",TRUE,df$Medal == medals)
+  sport_filter <- if_else("All" %in% sport, TRUE, df$Sport %in% sport)
+  country_filter <- if_else("All" %in% country, TRUE, df$Team %in% country)
+  
+  data <- data|>
+    filter(year_filter,season_filter,medal_filter,sport_filter,country_filter)
+  
+  return (data)
+}
+
+
+app$callback(
+    list(output('hist', 'figure'),
+        output('hist2', 'figure'),
+        output('hist3', 'figure')),
+    list(input('year_range', 'value'),
+        input('sport', 'value'),
+        input('country', 'value'),
+        input('medals', 'value'),
+        input('season', 'value')),
+    function(year_range, sport, country, medals, season){
+      filtered = filter_data(df, year_range=year_range, sport=sport, country=country, medals=medals, season=season)
+      fig1 <- ggplot(filtered, aes(x=Height,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
+      fig2 <- ggplot(filtered, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
+      fig3 <- ggplot(filtered, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
+      return (subplot(ggplotly(fig1), ggplotly(fig2)))
+    }
+)
 
 
 
-#
-#'   # Main Container Div
-#'   html.Div([
-#'     
-#'     # Sidebar (Filter) Div
-#'     html.Div([
-#'       html.H2("Filters", style = {'flex-grow': '1', 
-#'         'margin': '0px',
-#'         'border-bottom': '2px solid white', 
-#'         'line-height': '1'}),
-#'       html.Div([
-#'         html.H5("Drag Slider To Select Years"),
-#'         dcc.RangeSlider(
-#'           min = 1896, max = 2016,
-#'           marks = {i: {'label': f'{i+4}', 'style': {'transform': 'rotate(90deg)', 'color': 'white'}} for i in range(1896, 2016, 8)},
-#'           id = 'year_range',
-#'           value = [1896, 2016],
-#'           tooltip={"placement": "top", "always_visible": True}
-#'         )
-#'       ], style = {'width': '100%', 'flex-grow': '2'}),
-#'       html.Div([
-#'         html.H5("Select Sports"),
-#'         dcc.Dropdown(
-#'           options=['All'] + np.sort(df.Sport.unique()).tolist(),
-#'           value=['All'],
-#'           multi=True,
-#'           id='sport'
-#'         )
-#'       ], style = {'width': '100%', 'color': 'black', 'flex-grow': '1.5'}),
-#'       html.Div([
-#'         html.H5("Select Countries"),
-#'         dcc.Dropdown(
-#'           options=['All'] + np.sort(df.Team.unique()).tolist(),
-#'           value=['All'],
-#'           multi=True,         
-#'           id='country'
-#'         )
-#'       ], style = {'width': '100%', 'color': 'black', 'flex-grow': '1.5'}),
-#'       html.Div([
-#'         html.H5("Medal Filter"),
-#'         dcc.RadioItems(
-#'           options=['Gold', 'Silver', 'Bronze'] + ['All'],
-#'           value='All',
-#'           id='medals',
-#'           inline=True
-#'         )
-#'       ], style = {'width': '100%', 'flex-grow': '1', 'color': 'white'}),
-#'       html.Div([
-#'         html.H5("Season Filter"),
-#'         dcc.RadioItems(
-#'           options=df.Season.unique().tolist() + ['Both'],
-#'           value='Both',
-#'           id='season',
-#'           inline=True
-#'         )
-#'       ], style = {'width': '100%', 'flex-grow': '4', 'color': 'white'})
-#'     ], style = {'width': '23%', 'margin-top': '0px', 'padding': '25px', 
-#'       'background-color': '#544F78', 'border-radius': '10px',
-#'       'display': 'flex', 'justify-content': 'space-around', 'flex-direction': 'column'}),
-#'     
-#'     # Graph Container Div         
-#'     html.Div([
-#'       dcc.Tabs([
-#'         dcc.Tab(label='Plots', children=[
-#'           dcc.Loading(
-#'             id = 'loading_hist',
-#'             children = [
-#'               dcc.Graph(id='hist', 
-#'                         style = {'height': '350px', 'width': '33%', 'display': 'inline-block'},
-#'                         config={
-#'                           'displayModeBar':False
-#'                         }),
-#'               dcc.Graph(id='hist2', 
-#'                         style = {'height': '350px', 'width': '33%', 'display': 'inline-block'},
-#'                         config={
-#'                           'displayModeBar':False
-#'                         }),
-#'               dcc.Graph(id='hist3', 
-#'                         style = {'height': '350px', 'width': '33%', 'display': 'inline-block'},
-#'                         config={
-#'                           'displayModeBar':False
-#'                         })
-#'             ], type = 'circle', color = '#B33951'
-#'           ),
-#'           dcc.Loading(
-#'             id = 'loading_map',
-#'             children = [
-#'               dcc.Graph(id='map', 
-#'                         style = {'height': '500px', 'width': '99%'},
-#'                         config={
-#'                           'displayModeBar':False
-#'                         })
-#'             ], type = 'circle', color = '#B33951'
-#'           )
-#'         ],
-#'         className='custom-tab',
-#'         selected_className='custom-tab--selected'),
-#'         dcc.Tab(label='Data Table', children = [
-#'           html.Br(),
-#'           dash_table.DataTable(data=df.sample(50).to_dict('records'), 
-#'                                columns=[{"name": i, "id": i} for i in df.columns[1:]], 
-#'                                id = 'tbl', 
-#'                                style_cell = {'color': 'black', 'whiteSpace': 'normal'}, 
-#'                                style_header = {'color': 'white', 'backgroundColor': '#322c4a', 'border': '0px solid white', 'fontWeight': 'bold', 'textAlign': 'left'},
-#'                                style_data = {'backgroundColor': '#96293F', 'color': 'white'},
-#'                                style_data_conditional = [
-#'                                  {
-#'                                    'if': {'column_id': ['ID', 'Sex', 'Height', 'Team', 'Games', 'Season', 'Sport', 'Medal']},
-#'                                    'backgroundColor': '#B33951'
-#'                                  },
-#'                                  {
-#'                                    'if': {
-#'                                      'filter_query': '{Medal} = Gold',
-#'                                      'column_id': 'Medal'
-#'                                    },
-#'                                    'backgroundColor': 'gold',
-#'                                    'color': 'black'
-#'                                  },
-#'                                  {
-#'                                    'if': {
-#'                                      'filter_query': '{Medal} = Silver',
-#'                                      'column_id': 'Medal'
-#'                                    },
-#'                                    'backgroundColor': 'silver',
-#'                                    'color': 'black'
-#'                                  },
-#'                                  {
-#'                                    'if': {
-#'                                      'filter_query': '{Medal} = Bronze',
-#'                                      'column_id': 'Medal'
-#'                                    },
-#'                                    'backgroundColor': 'brown',
-#'                                    'color': 'black'
-#'                                  }
-#'                                ],
-#'                                page_action='native', 
-#'                                page_size=20)
-#'           
-#'         ],
-#'         className='custom-tab',
-#'         selected_className='custom-tab--selected')
-#'       ])
-#'     ], style = {'width': '70%', 'overflow': 'hidden', 'height': '950px', 
-#'       'background-color': '#544F78', 'border-radius': '10px', 
-#'       'padding': '1%'})
-#'   ], style = {'display': 'flex', 'justify-content': 'space-around'})
-#' ], style = {'display': 'fixed', 'height': '100%', 'background-color': '#322c4a'})
-#' 
-#' def filter_data(data, year_range=(1896, 2016), season='Both', medals='All', sport=['All'], country=['All']):
-#'   
-#'   year_filter = (df['Year'] >= year_range[0]) & (df['Year'] <= year_range[1])
-#' season_filter = True if season == 'Both' else (df['Season'] == season)
-#' medal_filter = True if medals == 'All' else (df['Medal'] == medals)
-#' sport_filter = True if 'All' in sport else (df['Sport'].isin(sport))
-#' country_filter = True if 'All' in country else (df['Team'].isin(country))
-#' 
-#' data = data[year_filter & season_filter & sport_filter & country_filter & medal_filter]
-#' 
-#' return data
-#' 
-#' @app.callback(
-#'   Output('tbl', 'data'),
-#'   Input('year_range', 'value'),
-#'   Input('sport', 'value'),
-#'   Input('country', 'value'),
-#'   Input('medals', 'value'),
-#'   Input('season', 'value')
-#' )
-#' def update_table(year_range, sport, country, medals, season):
-#'   filtered = filter_data(df, year_range=year_range, sport=sport, country=country, medals=medals, season=season)
-#' filtered.drop(columns = 'ID', inplace = True)
-#' if len(filtered) < 5000:
-#'   return filtered.to_dict('records')
-#' return filtered.sample(5000).to_dict('records')
-#' 
-#' 
-#' styling_template = {'title': {'font': {'size': 21, 'family': 'helvetica', 'color': 'white'}, 'x': 0,
-#'   'xref':'paper', 'y': 1, 'yanchor': 'bottom', 'yref':'paper', 'pad':{'b': 10}},
-#'   'legend': {'font': {'color': 'white'}},
-#'   'margin': dict(l=20, r=20, t=50, b=20),
-#'   'paper_bgcolor': 'rgba(0,0,0,0)', 
-#'   'plot_bgcolor': 'rgba(0,0,0,0)', 
-#'   'colorway': ['black'],
-#'   'xaxis': {
-#'     'color': 'white'
-#'   },
-#'   'yaxis': {
-#'     'color': 'white'
-#'   }}
-#' 
-#' map_styles = {
-#'   'title': {'x': 0.1, 'pad':{'b': 10}},
-#'   'geo': {'bgcolor': 'rgba(0,0,0,0)',
-#'     'framecolor': 'rgba(0,0,0,0)', 
-#'     'landcolor': '#fcf7e1', 
-#'     'lakecolor': '#97c7f7'},
-#'   'coloraxis': {
-#'     'colorbar': {'title': {'font': {'color': 'white', 'family': 'helvetica'}},
-#'       'tickfont': {'color': 'white', 'family': 'helvetica'}},
-#'     'colorscale': 'reds'
-#'   }
-#' }
-#' 
 #' # Function which takes filtered data and plots the two histograms
 #' @app.callback(
 #'   Output('hist', 'figure'),
@@ -286,33 +190,12 @@ app$layout(
 #' fig3.update_layout({'xaxis': {'range': [30, 200], 'title': {'text': 'Weight (kgs)'}}})
 #' 
 #' return fig, fig3, fig2
-#' 
-#' # Function which takes filtered data, does additional aggregation, and plots the choropleth
-#' @app.callback(
-#'   Output('map', 'figure'),
-#'   Input('year_range', 'value'),
-#'   Input('sport', 'value'),
-#'   Input('country', 'value'),
-#'   Input('medals', 'value'),
-#'   Input('season', 'value')
-#' )
-#' def update_map(year_range, sport, country, medals, season):
-#'   filtered = filter_data(df, year_range=year_range, sport=sport, country=country, medals=medals, season=season)
-#' grouped = filtered.groupby('Team')['Name'].nunique().to_frame().reset_index()
-#' grouped.rename(columns = {'Team': 'Country', 'Name': 'Number of Athletes'}, inplace = True)
-#' map = px.choropleth(grouped,
-#'                     locations = 'Country',
-#'                     locationmode = 'country names',
-#'                     color = 'Number of Athletes',
-#'                     title='Number of Athletes Per Country')
-#' map.update_layout(styling_template)
-#' map.update_layout(map_styles)
-#' 
-#' return map
-#' 
-#' if __name__ == '__main__':
-#'   app.run_server(debug=True)
-#' 
+
+
+
+
+
+
 
 
 
