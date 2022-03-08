@@ -129,14 +129,12 @@ app$layout(
 
 filter_data <- function (data, year_range=c(1896, 2016), season='Both', medals='All', sport=list('All'), country=list('All') ){
   
-  year_filter <- (df$Year >= year_range[1]) & (df$Year <= year_range[2])
-  season_filter <- if_else(season =="Both",TRUE,df$Season == season)
-  medal_filter <- if_else(medals =="All",TRUE,df$Medal == medals)
-  sport_filter <- if_else("All" %in% sport, TRUE, df$Sport %in% sport)
-  country_filter <- if_else("All" %in% country, TRUE, df$Team %in% country)
-  
-  data <- data|>
-    filter(year_filter,season_filter,medal_filter,sport_filter,country_filter)
+  data <- data%>%
+    filter(Year >= year_range[1] & Year <= year_range[2])%>%
+    filter(if (season =='Both') TRUE else Season ==season )%>%
+    filter(if (medals =='All') TRUE else Medal ==medals)%>%
+    filter(if("All" %in% sport) TRUE else Sport %in% sport)%>%
+    filter(if("All" %in% country) TRUE else Team %in% country)
   
   return (data)
 }
@@ -156,7 +154,7 @@ app$callback(
       fig1 <- ggplot(filtered, aes(x=Height,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
       fig2 <- ggplot(filtered, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
       fig3 <- ggplot(filtered, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
-      return (list(fig1,fig2,fig3))
+      return(list(fig1,fig2,fig3))
     }
 )
 
