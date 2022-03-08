@@ -2,10 +2,11 @@ library(dash)
 library(dashHtmlComponents)
 library(readr)
 library(dplyr)
+library(eList)
 library(plotly)
 
-# df = read_csv('data/clean_data.csv')
-df = read_csv(here::here('data', 'clean_data.csv'))
+df = read_csv('data/clean_data.csv')
+# df = read_csv(here::here('data', 'clean_data.csv'))
 
 app = Dash$new(external_stylesheets=list('https://codepen.io/chriddyp/pen/bWLwgP.css','style.css'))
 

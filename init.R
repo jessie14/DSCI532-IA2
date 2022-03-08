@@ -9,5 +9,5 @@ options(repos=r)
 # ======================================================================
 
 # packages go here
-install.packages(c('dash','here', 'readr','dplyr', 'ggthemes','plotly','dashHtmlComponents'))
+install.packages(c('dash','here', 'readr','dplyr', 'ggthemes','plotly','dashHtmlComponents','eList'))
 
