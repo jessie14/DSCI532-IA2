@@ -150,7 +150,9 @@ app$callback(
         input('medals', 'value'),
         input('season', 'value')),
     function(year_range, sport, country, medals, season){
-      filtered = filter_data(df, year_range=year_range, sport=sport, country=country, medals=medals, season=season)
+      filtered = filter_data(df, year_range=year_range, sport=sport, country=country, medals=medals, season=season)%>%
+        group_by(ID,Games)%>%
+        summarise(Age = mean(Age), Height = mean(Height), Weight = mean(Weight), Sex = first(Sex))
       fig1 <- ggplot(df, aes(x=Height,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Height (cm)", title = "Distribution of Heights")+
