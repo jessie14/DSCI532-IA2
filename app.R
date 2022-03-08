@@ -156,45 +156,9 @@ app$callback(
       fig1 <- ggplot(filtered, aes(x=Height,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
       fig2 <- ggplot(filtered, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
       fig3 <- ggplot(filtered, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
-      return (subplot(ggplotly(fig1), ggplotly(fig2)))
+      return (list(fig1,fig2,fig3))
     }
 )
-
-
-
-#' # Function which takes filtered data and plots the two histograms
-#' @app.callback(
-#'   Output('hist', 'figure'),
-#'   Output('hist2', 'figure'),
-#'   Output('hist3', 'figure'),
-#'   Input('year_range', 'value'),
-#'   Input('sport', 'value'),
-#'   Input('country', 'value'),
-#'   Input('medals', 'value'),
-#'   Input('season', 'value')
-#' )
-#' def update_graphs(year_range, sport, country, medals, season):
-#'   filtered = filter_data(df, year_range=year_range, sport=sport, country=country, medals=medals, season=season)
-#' filtered = filtered.groupby(['ID', 'Games']).agg({'Age': 'mean', 'Height': 'mean', 'Weight': 'mean', 'Sex': 'first'}).reset_index()
-#' 
-#' fig = px.histogram(data_frame=filtered, nbins=50, x='Height', color='Sex', opacity=0.8, barmode='overlay', title='Distribution of Athlete Heights')
-#' fig.update_layout(styling_template)
-#' fig.update_layout({'xaxis': {'range': [110, 225], 'title': {'text': 'Height (cm)'}}})
-#' 
-#' fig2 = px.histogram(data_frame=filtered, x='Age', color='Sex', opacity=0.8, barmode='overlay', title='Distribution of Athlete Ages')
-#' fig2.update_layout(styling_template)
-#' fig2.update_layout({'xaxis': {'range': [10, 60], 'title': {'text': 'Age (years)'}}})
-#' 
-#' fig3 = px.histogram(data_frame=filtered, nbins=50, x='Weight', color='Sex', opacity=0.8, barmode='overlay', title='Distribution of Athlete Weights')
-#' fig3.update_layout(styling_template)
-#' fig3.update_layout({'xaxis': {'range': [30, 200], 'title': {'text': 'Weight (kgs)'}}})
-#' 
-#' return fig, fig3, fig2
-
-
-
-
-
 
 
 
