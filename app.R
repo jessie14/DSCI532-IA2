@@ -151,9 +151,57 @@ app$callback(
         input('season', 'value')),
     function(year_range, sport, country, medals, season){
       filtered = filter_data(df, year_range=year_range, sport=sport, country=country, medals=medals, season=season)
-      fig1 <- ggplot(df, aes(x=Height,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
-      fig2 <- ggplot(df, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
-      fig3 <- ggplot(df, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')
+      fig1 <- ggplot(df, aes(x=Height,fill = Sex))+ 
+        geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        labs(x="Height (cm)", title = "Distribution of Heights")+
+        theme(
+          panel.background = element_rect(fill = "transparent"), # bg of the panel
+          plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+          panel.grid.major.x = element_blank() ,
+          axis.title.x = element_text(colour = "white"),
+          axis.title.y = element_text(colour = "white"),
+          axis.text.x = element_text(colour = "white"),
+          axis.text.y = element_text(colour = "white"),
+          plot.title = element_text(colour = "white"),
+          legend.title = element_text(colour = "white"),
+          legend.text = element_text(colour = "white"),
+          legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+          legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+        )
+      fig2 <- ggplot(df, aes(x=Weight,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        labs(x="Weight (kg)", title = "Distribution of Weights")+
+        theme(
+          panel.background = element_rect(fill = "transparent"), # bg of the panel
+          plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+          panel.grid.major.x = element_blank() ,
+          axis.title.x = element_text(colour = "white"),
+          axis.title.y = element_text(colour = "white"),
+          axis.text.x = element_text(colour = "white"),
+          axis.text.y = element_text(colour = "white"),
+          plot.title = element_text(colour = "white"),
+          legend.title = element_text(colour = "white"),
+          legend.text = element_text(colour = "white"),
+          legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+          legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+        )
+      fig3 <- ggplot(df, aes(x=Age,fill = Sex))+ geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        labs(x="Age (years)", title = "Distribution of Age")+
+        theme(
+          panel.background = element_rect(fill = "transparent"), # bg of the panel
+          plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+          panel.grid.major.x = element_blank() ,
+          axis.title.x = element_text(colour = "white"),
+          axis.title.y = element_text(colour = "white"),
+          axis.text.x = element_text(colour = "white"),
+          axis.text.y = element_text(colour = "white"),
+          plot.title = element_text(colour = "white"),
+          legend.title = element_text(colour = "white"),
+          legend.text = element_text(colour = "white"),
+          legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+          legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+        )
       return(list(ggplotly(fig1),ggplotly(fig2),ggplotly(fig3)))
     }
 )
