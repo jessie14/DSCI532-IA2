@@ -5,7 +5,7 @@ library(eList)
 library(glue)
 library(plotly)
 
-df = read_csv('clean_data.csv')
+df = read_csv('data/clean_data.csv')
 app = Dash$new(external_stylesheets=list('https://codepen.io/chriddyp/pen/bWLwgP.css','style.css'))
 
 
