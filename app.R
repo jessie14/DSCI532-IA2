@@ -157,7 +157,8 @@ app$callback(
       filtered <- filtered %>%
         group_by(ID,Games)%>%
         summarise(Age = mean(Age), Height = mean(Height), Weight = mean(Weight), Sex = first(Sex))%>%
-        unnest(cols = c(Sex))
+        unnest(cols = c(Sex))%>% 
+        distinct()
     
       
       fig1 <- ggplot(filtered, aes(x=Height,fill = Sex))+ 
