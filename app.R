@@ -175,19 +175,19 @@ app$callback(
         )
       
       fig1 <- ggplot(filtered, aes(x=Height,fill = Sex))+ 
-        geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        geom_histogram(bins=50,alpha = 0.6,position = 'identity')+
         labs(x="Height (cm)", title = "Distribution of Heights")+
         scale_y_continuous(labels = scales::label_number_si())+
         theme
       
       fig2 <- ggplot(filtered, aes(x=Weight,fill = Sex))+ 
-        geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        geom_histogram(bins=50,alpha = 0.6,position = 'identity')+
         labs(x="Weight (kg)", title = "Distribution of Weights")+
         scale_y_continuous(labels = scales::label_number_si())+
         theme
       
       fig3 <- ggplot(filtered, aes(x=Age,fill = Sex))+ 
-        geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
+        geom_histogram(bins=50,alpha = 0.6,position = 'identity')+
         labs(x="Age (years)", title = "Distribution of Age")+
         scale_y_continuous(labels = scales::label_number_si())+
         theme
@@ -198,5 +198,5 @@ app$callback(
 
 
 
-app$run_server(debug = T )
-# app$run_server(host= '0.0.0.0')
+# app$run_server(debug = T )
+app$run_server(host= '0.0.0.0')
