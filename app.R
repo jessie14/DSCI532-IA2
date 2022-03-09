@@ -7,7 +7,6 @@ library(eList)
 library(plotly)
 
 df = read_csv('data/clean_data.csv')
-# df = read_csv(here::here('data', 'clean_data.csv'))
 
 app = Dash$new(external_stylesheets=list('https://codepen.io/chriddyp/pen/bWLwgP.css','style.css'))
 
@@ -160,8 +159,7 @@ app$callback(
         unnest(cols = c(Sex))%>% 
         distinct()
       
-      theme <- scale_y_continuous(labels = scales::label_number_si())+
-        theme(
+      theme <- theme(
           panel.background = element_rect(fill = "transparent"), # bg of the panel
           plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
           panel.grid.major.x = element_blank() ,
@@ -179,16 +177,19 @@ app$callback(
       fig1 <- ggplot(filtered, aes(x=Height,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Height (cm)", title = "Distribution of Heights")+
+        scale_y_continuous(labels = scales::label_number_si())+
         theme
       
       fig2 <- ggplot(filtered, aes(x=Weight,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Weight (kg)", title = "Distribution of Weights")+
+        scale_y_continuous(labels = scales::label_number_si())+
         theme
       
       fig3 <- ggplot(filtered, aes(x=Age,fill = Sex))+ 
         geom_histogram(bins=50,alpha = 0.5,position = 'identity')+
         labs(x="Age (years)", title = "Distribution of Age")+
+        scale_y_continuous(labels = scales::label_number_si())+
         theme
       
       return(list(ggplotly(fig1),ggplotly(fig2),ggplotly(fig3)))
@@ -197,5 +198,5 @@ app$callback(
 
 
 
-# app$run_server(debug = T )
-app$run_server(host= '0.0.0.0')
+app$run_server(debug = T )
+# app$run_server(host= '0.0.0.0')
